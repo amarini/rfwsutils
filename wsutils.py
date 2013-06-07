@@ -17,7 +17,7 @@
 # limitations under the License.
 
 
-import os, re
+import os, re, sys
 import ConfigParser
 
 #----------------------------------------------------------------------
@@ -72,5 +72,19 @@ def findWorkspaces(topdir):
     return retval
 
 
+
+#----------------------------------------------------------------------
+
+def getObj(ws, name):
+    """ tries to find the given object in the workspace or prints
+    an error message an exits if there is no such object """
+
+    obj = ws.obj(name)
+
+    if obj == None:
+        print >> sys.stderr,"object '" + name + "' not found in workspace " + ws.GetName()
+        sys.exit(1)
+
+    return obj
 
 #----------------------------------------------------------------------
