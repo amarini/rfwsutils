@@ -49,8 +49,7 @@ if len(ARGV) != 3:
 
 import ROOT
 
-for lib in options.lib:
-    ROOT.gSystem.Load(lib)
+wsutils.loadLibraries(options)
 
 fname = ARGV.pop(0)
 itemName = ARGV.pop(0)
