@@ -32,11 +32,12 @@ parser = OptionParser("""
 wsutils.addCommonOptions(parser)
 
 parser.add_option("--range",
-                  dest="range",
+                  dest="rangeSpec",
                   default = None,
-                  help="specify the range (min,max) for the variable on the x axis",
-                  metavar="min,max"
-                  )
+                  type="str",
+                  help="specify the plotting range",
+                  metavar="min,max")
+
 
 (options, ARGV) = parser.parse_args()
 
@@ -48,21 +49,6 @@ wsutils.checkCommonOptions(options)
 if len(ARGV) < 3:
     print >> sys.stderr,"expected at least three positional arguments"
     sys.exit(1)
-
-#----------------------------------------
-
-if options.range != None:
-
-    tmp = options.range.split(',')
-    if len(tmp) != 2:
-        print >> sys.stderr,"malformed range specification " + options.range
-        sys.exit(1)
-        
-    try:
-        options.range = [ float(x) for x in tmp ]
-    except ValueError, ex:
-        print >> sys.stderr,"Error when parsing the range specification:",ex
-        sys.exit(1)
 
 #----------------------------------------
 
@@ -93,9 +79,12 @@ workspace = workspaces[0]
 varname = ARGV.pop(0)
 var = wsutils.getObj(workspace, varname)
 
-if options.range != None:
-    var.setMin(options.range[0])
-    var.setMax(options.range[1])
+if options.rangeSpec != None:
+    rangeMin, rangeMax = [ float(x) for x in options.rangeSpec.split(',') ]
+
+    assert rangeMin <= rangeMax
+
+    var.setRange(rangeMin, rangeMax)
 
 frame = var.frame()
 
