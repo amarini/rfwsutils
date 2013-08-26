@@ -42,16 +42,27 @@ def addCommonOptions(parser):
                   help="library to load before opening the files. Can be specified multiple times.",
                   metavar="LIB")
 
+    parser.add_option("--nolib",
+                      # note the inverted logic here
+                      dest="loadProfileLibs",
+                      default = True,
+                      action="store_false",
+                      help="do NOT load the libraries specified in the startup profile",
+                      )
 
 #----------------------------------------------------------------------
 
 def checkCommonOptions(options):
     """ perform some common checks on command line options """
 
-    for lib in options.lib:
-        if not os.path.exists(lib):
-            print >> sys.stderr,"library " + lib + " does not exist, exiting"
-            sys.exit(1)
+    # TODO: is there a way to see whether the libraries were specified
+    #       in --lib or read from the profile ?
+
+    if options.loadProfileLibs:
+        for lib in options.lib:
+            if not os.path.exists(lib):
+                print >> sys.stderr,"library " + lib + " does not exist, exiting"
+                sys.exit(1)
 
 
 #----------------------------------------------------------------------
@@ -86,5 +97,20 @@ def getObj(ws, name):
         sys.exit(1)
 
     return obj
+
+#----------------------------------------------------------------------
+
+def loadLibraries(options):
+    """ loads the libraries specified in the options """
+
+    if not options.loadProfileLibs:
+        return
+
+    import ROOT
+    
+    for lib in options.lib:
+        ROOT.gSystem.Load(lib)
+
+
 
 #----------------------------------------------------------------------
