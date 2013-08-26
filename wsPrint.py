@@ -47,8 +47,7 @@ if len(ARGV) < 1:
 
 import ROOT
 
-for lib in options.lib:
-    ROOT.gSystem.Load(lib)
+wsutils.loadLibraries(options)
 
 for fname in ARGV:
 
