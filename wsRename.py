@@ -17,7 +17,7 @@
 # limitations under the License.
 
 
-import sys, os
+import sys, os, wsutils
 
 #----------------------------------------------------------------------
 
@@ -70,15 +70,19 @@ parser = OptionParser(   """
 """)
 
 
-parser.add_option("--lib",
-                  dest="libs",
-                  default = [],
-                  type="str",
-                  action="append", # append to list
-                  help="library to load before opening the files. Can be specified multiple times.",
-                  metavar="LIB")
+# parser.add_option("--lib",
+#                   dest="libs",
+#                   default = [],
+#                   type="str",
+#                   action="append", # append to list
+#                   help="library to load before opening the files. Can be specified multiple times.",
+#                   metavar="LIB")
 
+wsutils.addCommonOptions(parser)
 (options, ARGV) = parser.parse_args()
+
+#----------------------------------------
+wsutils.checkCommonOptions(options)
 
 
 if len(ARGV) < 4:
@@ -94,17 +98,12 @@ if len(ARGV) % 2 != 0:
 
 renameArgs = zip(ARGV[::2],ARGV[1::2])
 
-for lib in options.libs:
-    if not os.path.exists(lib):
-        print >> sys.stderr,"library " + lib + " does not exist"
-        sys.exit(1)
-
 
 #----------------------------------------
 
 import ROOT; gcs = []
-for lib in options.libs:
-    ROOT.gSystem.Load(lib)
+
+wsutils.loadLibraries(options)
 
 fin = ROOT.TFile.Open(inputFname)
 
