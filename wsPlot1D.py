@@ -69,8 +69,7 @@ if options.range != None:
 import ROOT
 gcs = []
 
-for lib in options.lib:
-    ROOT.gSystem.Load(lib)
+wsutils.loadLibraries(options)
 
 fname = ARGV.pop(0)
 fin = ROOT.TFile.Open(fname)
