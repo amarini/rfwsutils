@@ -113,19 +113,7 @@ if fin == None or not fin.IsOpen():
 
 
 ws = findWorkspace(fin)
-
-components = ws.components()
-it = components.iterator()
-
-allMembers = []
-
-while True:
-
-    obj = it.Next()
-    if obj == None:
-        break
-
-    allMembers.append(obj)
+allMembers = wsutils.getAllMembers(ws)
 
 #----------
 # check that we do not produce any collisions
