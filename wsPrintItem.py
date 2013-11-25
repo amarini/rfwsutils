@@ -75,14 +75,39 @@ if len(workspaces) < 1:
 
 workspace = workspaces[0]
 
+
+allItemNames = None
+
+allObjs = []
+
 for itemName in ARGV:
 
     obj = workspace.obj(itemName)
 
-    if obj == None:
-        print >> sys.stderr,"could not find item %s in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
-        sys.exit(1)
+    if obj != None:
+        # found in workspace, add to the list of items to be printed
+        allObjs.append(obj)
+        continue
 
+    # not found, try a wildcard
+    if allItemNames == None:
+        # get the names of all items
+        allItemNames = [ x.GetName() for x in wsutils.getAllMembers(workspace) ]
+        import fnmatch
+
+        matchingNames = fnmatch.filter(allItemNames, itemName)
+
+        if not matchingNames:
+            print >> sys.stderr,"could not find item %s (nor does it match as a wildcard) in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
+            sys.exit(1)
+
+        allObjs.extend(workspace.obj(name) for name in matchingNames)
+
+    # end of loop over item specifications
+
+# print the objects found
+
+for obj in allObjs:
     if options.verbose:
         obj.Print("V")
     else:
