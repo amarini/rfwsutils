@@ -57,6 +57,9 @@ def checkCommonOptions(options):
 
     # TODO: is there a way to see whether the libraries were specified
     #       in --lib or read from the profile ?
+    
+    # replace environment variables in the variable expressions
+    options.lib = [ os.path.expandvars(x) for x in options.lib ]
 
     if options.loadProfileLibs:
         for lib in options.lib:
