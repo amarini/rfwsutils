@@ -70,15 +70,16 @@ parser = OptionParser(   """
 """)
 
 
-# parser.add_option("--lib",
-#                   dest="libs",
-#                   default = [],
-#                   type="str",
-#                   action="append", # append to list
-#                   help="library to load before opening the files. Can be specified multiple times.",
-#                   metavar="LIB")
 
 wsutils.addCommonOptions(parser)
+
+parser.add_option("-n",
+                  dest="dryrun",
+                  default = False,
+                  action="store_true",
+                  help="do NOT run any renaming but just check if renamings would not cause any conflict",
+                  )
+
 (options, ARGV) = parser.parse_args()
 
 #----------------------------------------
@@ -179,9 +180,16 @@ for oldName, newName, member in zip(oldNames, newNames, allMembers):
     
 
 if numRenames == 0:
-    print >> sys.stderr,"WARNING: no object renamed"
+    if options.dryrun:
+        print >> sys.stderr,"WARNING: no object would be renamed"
+    else:
+        print >> sys.stderr,"WARNING: no object renamed"
 else:
-    print >> sys.stderr,"%d objects renamed" % numRenames
+    if options.dryrun:
+        print >> sys.stderr,"%d objects would be renamed" % numRenames
+    else:
+        print >> sys.stderr,"%d objects renamed" % numRenames
 
-print >> sys.stderr,"writing output file",outputFname
-ws.writeToFile(outputFname)
+if not options.dryrun:
+    print >> sys.stderr,"writing output file",outputFname
+    ws.writeToFile(outputFname)
