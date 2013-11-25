@@ -114,3 +114,25 @@ def loadLibraries(options):
 
 
 #----------------------------------------------------------------------
+
+def getAllMembers(ws):
+    """ @return a list of all components of the given workspace """
+
+    components = ws.components()
+    it = components.iterator()
+
+    allMembers = []
+
+    while True:
+
+        obj = it.Next()
+        if obj == None:
+            break
+
+        allMembers.append(obj)
+
+
+    return allMembers
+
+
+#----------------------------------------------------------------------
