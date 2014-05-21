@@ -38,6 +38,13 @@ parser.add_option("-v",
                   help="call Print with the verbose option",
                   )
 
+parser.add_option("--brief",
+                  dest="brief",
+                  default = False,
+                  action="store_true",
+                  help="only print the name of the item (if it exists) rather than the name and the description. Useful together with wildcards to see which members are in a workspace",
+                  )
+
 (options, ARGV) = parser.parse_args()
 
 #----------------------------------------
@@ -49,8 +56,16 @@ if len(ARGV) < 2:
     print >> sys.stderr,"expected at least two positional arguments"
     sys.exit(1)
 
+if options.verbose and options.brief:
+    print >> sys.stderr,"-v and --brief can't be specified together"
+    sys.exit(1)
+
 #----------------------------------------
 
+
+# avoid ROOT trying to use the command line arguments
+# (which causes a segmentation fault if one e.g. a regex contains a $ etc.)
+sys.argv[1:] = []
 
 import ROOT
 
@@ -108,7 +123,9 @@ for itemName in ARGV:
 # print the objects found
 
 for obj in allObjs:
-    if options.verbose:
+    if options.brief:
+        print obj.GetName()
+    elif options.verbose:
         obj.Print("V")
     else:
         obj.Print()
