@@ -50,6 +50,14 @@ def addCommonOptions(parser):
                       help="do NOT load the libraries specified in the startup profile",
                       )
 
+    parser.add_option("-w",
+                      dest="workspaceName",
+                      default = None,
+                      type = str,
+                      help="specify the workspace name explicitly (in case more than one is in top level directory in the file)",
+                      metavar = "WSNAME",
+                      )
+
 #----------------------------------------------------------------------
 
 def checkCommonOptions(options):
@@ -70,24 +78,34 @@ def checkCommonOptions(options):
 
 #----------------------------------------------------------------------
 
-def findWorkspaces(topdir):
+def findWorkspaces(topdir, options):
     import ROOT
 
     # topdir can be a TFile or more generally a TDirectory
     retval = []
 
-    for key in topdir.GetListOfKeys():
+    if options.workspaceName != None:
+        # a workspace was specified explicitly
+        ws = topdir.Get(options.workspaceName)
+        if ws == None:
+            print >> sys.stderr,"no workspace named",options.workspaceName,"found"
+            sys.exit(1)
 
-        # TODO: support subdirectories
-        obj = topdir.Get(key.GetName())
-        if isinstance(obj,ROOT.RooWorkspace):
-            retval.append(obj)
+        retval = [ ws ]
+        
+    else:
+        # find all workspaces in the top level directory in the file
+        
+        for key in topdir.GetListOfKeys():
+
+            # TODO: support subdirectories
+            obj = topdir.Get(key.GetName())
+            if isinstance(obj,ROOT.RooWorkspace):
+                retval.append(obj)
 
     return retval
 
-
-
-#----------------------------------------------------------------------
+#----------------------------------------------------------------------    
 
 def getObj(ws, name):
     """ tries to find the given object in the workspace or prints

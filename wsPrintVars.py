@@ -58,7 +58,7 @@ for fname in ARGV:
         sys.exit(1)
 
     # traverse all directories in this file
-    for ws in wsutils.findWorkspaces(fin):
+    for ws in wsutils.findWorkspaces(fin, options):
 
         print "variables in " + fname + ":" + ws.GetName() + ":"
         print "----------------------------------------"

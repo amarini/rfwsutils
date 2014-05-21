@@ -58,7 +58,7 @@ for fname in ARGV:
         sys.exit(1)
 
     # traverse all directories in this file
-    for obj in wsutils.findWorkspaces(fin):
+    for obj in wsutils.findWorkspaces(fin, options):
 
         print fname + ":" + obj.GetName() + ":"
         print "----------------------------------------"

@@ -66,7 +66,7 @@ if not fin.IsOpen():
     sys.exit(1)
 
 # insist that there is a single workspace in this file
-workspaces = wsutils.findWorkspaces(fin)
+workspaces = wsutils.findWorkspaces(fin, options)
 
 if len(workspaces) > 1:
     print >> sys.stderr,"more than one workspace found"
