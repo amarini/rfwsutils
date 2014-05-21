@@ -45,6 +45,15 @@ parser.add_option("--brief",
                   help="only print the name of the item (if it exists) rather than the name and the description. Useful together with wildcards to see which members are in a workspace",
                   )
 
+parser.add_option("--regex",
+                  dest="regex",
+                  default = False,
+                  action="store_true",
+                  help="interpret the patterns as regular experssions (rather than using fnmatch)",
+                  )
+
+
+
 (options, ARGV) = parser.parse_args()
 
 #----------------------------------------
@@ -97,26 +106,50 @@ allObjs = []
 
 for itemName in ARGV:
 
-    obj = workspace.obj(itemName)
 
-    if obj != None:
-        # found in workspace, add to the list of items to be printed
-        allObjs.append(obj)
-        continue
+    if options.regex:
+        # always interpret this as a regex
+        if allItemNames == None:
+            # get the names of all items
+            allItemNames = [ x.GetName() for x in wsutils.getAllMembers(workspace) ]
 
-    # not found, try a wildcard
-    if allItemNames == None:
-        # get the names of all items
-        allItemNames = [ x.GetName() for x in wsutils.getAllMembers(workspace) ]
-        import fnmatch
+        import re
 
-        matchingNames = fnmatch.filter(allItemNames, itemName)
+        # use search(..) (not necessarily starting from the beginning) rather
+        # than match(..)
 
-        if not matchingNames:
-            print >> sys.stderr,"could not find item %s (nor does it match as a wildcard) in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
-            sys.exit(1)
+        for name in allItemNames:
+            mo = re.search(itemName, name)
+            if mo:
+                # don't care about duplicates for the moment
+                obj = workspace.obj(name)
+                assert obj != None
+                allObjs.append(obj)
+                               
+        # end of loop over all items in the workspace
 
-        allObjs.extend(workspace.obj(name) for name in matchingNames)
+    else:
+
+        obj = workspace.obj(itemName)
+
+        if obj != None:
+            # found in workspace, add to the list of items to be printed
+            allObjs.append(obj)
+            continue
+
+        # not found, try a wildcard
+        if allItemNames == None:
+            # get the names of all items
+            allItemNames = [ x.GetName() for x in wsutils.getAllMembers(workspace) ]
+            import fnmatch
+
+            matchingNames = fnmatch.filter(allItemNames, itemName)
+
+            if not matchingNames:
+                print >> sys.stderr,"could not find item %s (nor does it match as a wildcard) in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
+                sys.exit(1)
+
+            allObjs.extend(workspace.obj(name) for name in matchingNames)
 
     # end of loop over item specifications
 
