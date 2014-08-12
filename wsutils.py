@@ -203,6 +203,8 @@ def getAllMembers(ws):
 
         allMembers.append(obj)
 
+    # add datasets (which seem NOT to be included in the above ?)
+    allMembers += rootListTolist(ws.allData())
 
     return allMembers
 
