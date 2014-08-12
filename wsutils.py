@@ -20,6 +20,57 @@
 import os, re, sys
 import ConfigParser
 
+
+#----------------------------------------------------------------------
+
+def rootListTolist(rootList):
+    """ converts a ROOT.list object to a list
+
+        see also http://root.cern.ch/phpBB3/viewtopic.php?f=14&t=11376
+    """
+
+    if not rootListTolist.initialized:
+        # make sure we load the corresponding class dictionary
+        # TODO: this is not thread safe...
+
+        import ROOT
+        import tempfile
+
+        linkDefFile = tempfile.NamedTemporaryFile(suffix = ".h")
+
+        print >> linkDefFile, '#include "RooAbsData.h"'
+        print >> linkDefFile, '#include <list>'
+        print >> linkDefFile, '#ifdef __CINT__'
+        print >> linkDefFile, '#pragma link C++ class std::list<RooAbsData*>::iterator;'
+        print >> linkDefFile, '#endif'
+
+        linkDefFile.flush()
+
+        # workaround for CMSSW
+        if os.environ.has_key("ROOFITSYS"):
+            ROOT.gInterpreter.AddIncludePath(os.path.join(os.environ["ROOFITSYS"], "include"))        
+
+        # load this generated macro
+        ROOT.gROOT.LoadMacro(linkDefFile.name + "+")
+        
+        rootListTolist.initialized = True
+    
+    #----------
+    
+    retval = []
+
+    it = rootList.begin()
+    end = rootList.end()
+    
+    while it != end:
+        retval.append(it.__deref__())
+        it.__postinc__(1)
+
+    return retval
+
+# static variable
+rootListTolist.initialized = False
+
 #----------------------------------------------------------------------
 def addCommonOptions(parser):
     """ adds common options to the command line arguments parser """
