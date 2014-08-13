@@ -103,6 +103,10 @@ for itemName in ARGV:
 
 # it looks like we have to create a TCanvas by hand ?
 gcs.append(ROOT.TCanvas())
+
+# set the title to the name of the first object
+frame.SetTitle(ARGV[0])
+
 frame.Draw()
 
 
