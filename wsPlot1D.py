@@ -38,6 +38,13 @@ parser.add_option("--range",
                   help="specify the plotting range",
                   metavar="min,max")
 
+parser.add_option("-o",
+                  dest="outputFile",
+                  default = None,
+                  type="str",
+                  help="output file to save the plot to",
+                  metavar="FNAME")
+
 
 (options, ARGV) = parser.parse_args()
 
@@ -97,6 +104,10 @@ for itemName in ARGV:
 # it looks like we have to create a TCanvas by hand ?
 gcs.append(ROOT.TCanvas())
 frame.Draw()
+
+
+if options.outputFile:
+    ROOT.gPad.SaveAs(options.outputFile)
 
 # if not running interactively and not asked to save to an output
 # file, should we enter a waiting loop ? (how do we do this ?)
