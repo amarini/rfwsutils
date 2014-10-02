@@ -72,7 +72,9 @@ def rootListTolist(rootList):
 rootListTolist.initialized = False
 
 #----------------------------------------------------------------------
-def addCommonOptions(parser):
+def addCommonOptions(parser,
+                     addSetVars = False,
+                     ):
     """ adds common options to the command line arguments parser """
 
     conf = ConfigParser.SafeConfigParser()
@@ -108,6 +110,15 @@ def addCommonOptions(parser):
                       help="specify the workspace name explicitly (in case more than one is in top level directory in the file)",
                       metavar = "WSNAME",
                       )
+    if addSetVars:
+        parser.add_option("--set",
+                          dest="setVars",
+                          default = "",
+                          type = str,
+                          help="comma separated list of expressions var1=value1,var2=value2,... will set variables to the given values after loading the workspace continuing",
+                          metavar = "EXPRS",
+                          )
+
 
 #----------------------------------------------------------------------
 
@@ -126,6 +137,18 @@ def checkCommonOptions(options):
                 print >> sys.stderr,"library " + lib + " does not exist, exiting"
                 sys.exit(1)
 
+    if hasattr(options, "setVars"):
+        # parse this
+
+        tmp = {}
+
+        if options.setVars != "":
+            for spec in options.setVars.split(","):
+                varname, value = spec.split("=",1)
+                tmp[varname] = float(value)
+
+        options.setVars = tmp
+            
 
 #----------------------------------------------------------------------
 
@@ -210,3 +233,15 @@ def getAllMembers(ws):
 
 
 #----------------------------------------------------------------------
+
+def applySetVars(workspace, setVarsDict):
+    for name, value in setVarsDict.items():
+        var = getObj(workspace, name)
+
+        import ROOT
+
+        if not isinstance(var, ROOT.RooRealVar):
+            raise Exception("object %s in workspace %s is not of type RooRealVar" % (name, workspace.GetName()))
+
+        # TODO: should we print a warning if the value is outside the range ?
+        var.setVal(value)

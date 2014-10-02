@@ -29,7 +29,9 @@ parser = OptionParser("""
 """
 )
 
-wsutils.addCommonOptions(parser)
+wsutils.addCommonOptions(parser,
+                         addSetVars = True
+                         )
 
 parser.add_option("-v",
                   dest="verbose",
@@ -102,6 +104,7 @@ if len(workspaces) < 1:
 
 workspace = workspaces[0]
 
+wsutils.applySetVars(workspace, options.setVars)
 
 allItemNames = None
 

@@ -29,7 +29,9 @@ parser = OptionParser("""
 """
 )
 
-wsutils.addCommonOptions(parser)
+wsutils.addCommonOptions(parser,
+                         addSetVars = True
+                         )
 
 parser.add_option("--range",
                   dest="rangeSpec",
@@ -82,6 +84,8 @@ if len(workspaces) < 1:
     sys.exit(1)
 
 workspace = workspaces[0]
+
+wsutils.applySetVars(workspace, options.setVars)
 
 varname = ARGV.pop(0)
 var = wsutils.getObj(workspace, varname)
