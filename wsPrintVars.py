@@ -47,6 +47,9 @@ if len(ARGV) < 1:
 
 import ROOT
 
+# avoid unnecessary X11 connections
+ROOT.gROOT.SetBatch(True)
+
 wsutils.loadLibraries(options)
 
 for fname in ARGV:
