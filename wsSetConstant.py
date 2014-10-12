@@ -49,6 +49,9 @@ if len(ARGV) < 2 or len(ARGV) > 3:
 
 import ROOT
 
+# avoid unnecessary X11 connections
+ROOT.gROOT.SetBatch(True)
+
 wsutils.loadLibraries(options)
 
 
