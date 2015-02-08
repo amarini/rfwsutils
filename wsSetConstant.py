@@ -23,15 +23,23 @@ import sys, os, wsutils
 from optparse import OptionParser
 parser = OptionParser("""
 
-  usage: %prog [options] file member (True|False)
+  usage: %prog [options] file member [ member ... ]
 
   calls setConstant on the given item in the workspace found in file
 
-  If no third argument is specified, 'True' is assumed
+  Sets the members constant unless the option --non-constant is given
 """
 )
 
 wsutils.addCommonOptions(parser)
+
+parser.add_option("--non-constant",
+                  # note the inverse logic here
+                  dest="constant",
+                  default = True,
+                  action = "store_false",
+                  help="set items non-constant instead of setting them constant",
+                  )
 
 (options, ARGV) = parser.parse_args()
 
@@ -40,8 +48,8 @@ wsutils.addCommonOptions(parser)
 #----------------------------------------
 wsutils.checkCommonOptions(options)
 
-if len(ARGV) < 2 or len(ARGV) > 3:
-    print >> sys.stderr,"expected 2-3 positional arguments"
+if len(ARGV) < 2:
+    print >> sys.stderr,"expected at least 2 positional arguments"
     sys.exit(1)
 
 #----------------------------------------
@@ -56,12 +64,9 @@ wsutils.loadLibraries(options)
 
 
 fname = ARGV.pop(0)
-itemName = ARGV.pop(0)
 
-if len(ARGV) > 0:
-    value = bool(ARGV.pop(0))
-else:
-    value = True
+
+value = options.constant
 
 fin = ROOT.TFile.Open(fname,"UPDATE")
 if not fin.IsOpen():
@@ -82,14 +87,16 @@ if len(workspaces) < 1:
 workspace = workspaces[0]
 
 
+for itemName in ARGV:
 
-obj = workspace.obj(itemName)
+    print itemName
+    obj = workspace.obj(itemName)
 
-if obj == None:
-    print >> sys.stderr,"could not find item %s in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
-    sys.exit(1)
+    if obj == None:
+        print >> sys.stderr,"could not find item %s in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
+        sys.exit(1)
 
-obj.setConstant(value)
+    obj.setConstant(value)
 
 # write the workspace back
 fin.cd()
