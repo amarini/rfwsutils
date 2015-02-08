@@ -31,12 +31,12 @@ parser = OptionParser("""
 
 wsutils.addCommonOptions(parser)
 
-# parser.add_option("-v",
-#                   dest="verbose",
-#                   default = False,
-#                   action="store_true",
-#                   help="call Print with the verbose option",
-#                   )
+parser.add_option("--weights",
+                  dest="printWeights",
+                  default = False,
+                  action="store_true",
+                  help="also print weights of entries in the first column",
+                  )
 
 (options, ARGV) = parser.parse_args()
 
@@ -100,6 +100,10 @@ for i in range(numEvents):
         # (or is this already guaranteed ?)
         varnames = []
 
+        if options.printWeights:
+            # TODO: we should use the name of the weight variable here
+            varnames.append("<weight>")
+
         it = values.fwdIterator()
         while True:
             obj = it.next()
@@ -112,5 +116,8 @@ for i in range(numEvents):
     # not very optimized version doing string comparisons all the time
 
     thisValues = [ values.getRealValue(varname) for varname in varnames ]
+
+    if options.printWeights:
+        thisValues.insert(0,ds.weight())
 
     print ",".join(str(x) for x in thisValues)
