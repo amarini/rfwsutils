@@ -33,6 +33,12 @@ parser = OptionParser("""
 
 wsutils.addCommonOptions(parser)
 
+parser.add_option("--scale",
+                  default = False,
+                  action = "store_true",
+                  help="instead of setting the value, multiply the existing values by the value given on the command line",
+                  )
+
 (options, ARGV) = parser.parse_args()
 
 #----------------------------------------
@@ -83,6 +89,10 @@ for itemName in ARGV:
         print >> sys.stderr,"could not find item %s in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
         sys.exit(1)
 
+    if options.scale:
+        newval = obj.getVal() * value
+    else:
+        newval = value
 
     # TODO: what if we go beyond the range of the variable ?
     obj.setVal(newval)
