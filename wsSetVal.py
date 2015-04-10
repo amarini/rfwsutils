@@ -23,7 +23,7 @@ import sys, os, wsutils
 from optparse import OptionParser
 parser = OptionParser("""
 
-  usage: %prog [options] file member value
+  usage: %prog [options] file value member1 [ member2 ... ]
 
   calls setVal on the given item in the workspace found in file
 
@@ -40,8 +40,8 @@ wsutils.addCommonOptions(parser)
 #----------------------------------------
 wsutils.checkCommonOptions(options)
 
-if len(ARGV) != 3:
-    print >> sys.stderr,"expected exactly three positional arguments"
+if len(ARGV) < 3:
+    print >> sys.stderr,"expected at least three positional arguments"
     sys.exit(1)
 
 #----------------------------------------
@@ -55,9 +55,7 @@ ROOT.gROOT.SetBatch(True)
 wsutils.loadLibraries(options)
 
 fname = ARGV.pop(0)
-itemName = ARGV.pop(0)
 value = float(ARGV.pop(0))
-
 
 fin = ROOT.TFile.Open(fname,"UPDATE")
 if not fin.IsOpen():
@@ -78,14 +76,16 @@ if len(workspaces) < 1:
 workspace = workspaces[0]
 
 
+for itemName in ARGV:
+    obj = workspace.obj(itemName)
 
-obj = workspace.obj(itemName)
+    if obj == None:
+        print >> sys.stderr,"could not find item %s in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
+        sys.exit(1)
 
-if obj == None:
-    print >> sys.stderr,"could not find item %s in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
-    sys.exit(1)
 
-obj.setVal(value)
+    # TODO: what if we go beyond the range of the variable ?
+    obj.setVal(newval)
 
 # write the workspace back
 fin.cd()
