@@ -244,4 +244,11 @@ def applySetVars(workspace, setVarsDict):
             raise Exception("object %s in workspace %s is not of type RooRealVar" % (name, workspace.GetName()))
 
         # TODO: should we print a warning if the value is outside the range ?
+
+        # adapt maximum or minimum if necessary
+        if value < var.getMin():
+            var.setMin(value)
+        elif value > var.getMax():
+            var.setMax(value)
+            
         var.setVal(value)
