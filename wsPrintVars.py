@@ -19,6 +19,61 @@
 
 import sys, os, wsutils
 
+#----------------------------------------------------------------------
+
+def printVarsStandard(fname, ws):
+    print "variables in " + fname + ":" + ws.GetName() + ":"
+    print "----------------------------------------"
+    sys.stdout.flush()
+
+    # vars is a RooArgSet
+    vars = ws.allVars()
+
+    it = vars.iterator()
+
+    while True:
+        var = it.Next()
+        if var == None:
+            break
+
+        var.Print()
+
+#----------------------------------------------------------------------
+
+def printVarsCSV(ws):
+    # vars is a RooArgSet
+    vars = ws.allVars()
+
+    it = vars.iterator()
+
+    print ",".join([
+        "name",
+        "value",
+        "min",
+        "max",
+        "constant"])
+
+    while True:
+        var = it.Next()
+        if var == None:
+            break
+
+        parts = [
+            var.GetName(),
+            var.getVal(),
+            var.getMin(),
+            var.getMax(),
+            var.isConstant(),
+            ]
+        
+        print ",".join([ str(p) for p in parts ])
+
+
+
+
+#----------------------------------------------------------------------
+# main
+#----------------------------------------------------------------------
 
 from optparse import OptionParser
 parser = OptionParser("""
@@ -28,6 +83,12 @@ parser = OptionParser("""
   finds RooFit workspaces in ROOT files and print the variables found in them
 """
 )
+
+parser.add_option("--csv",
+                  default = False,
+                  action="store_true",
+                  help="print information about variables in .csv format",
+                  )
 
 wsutils.addCommonOptions(parser)
 
@@ -62,22 +123,10 @@ for fname in ARGV:
 
     # traverse all directories in this file
     for ws in wsutils.findWorkspaces(fin, options):
-
-        print "variables in " + fname + ":" + ws.GetName() + ":"
-        print "----------------------------------------"
-        sys.stdout.flush()
-
-        # vars is a RooArgSet
-        vars = ws.allVars()
-
-        it = vars.iterator()
-
-        while True:
-            var = it.Next()
-            if var == None:
-                break
-
-            var.Print()
+        if options.csv:
+            printVarsCSV(ws)
+        else:
+            printVarsStandard(fname, ws)
 
     ROOT.gROOT.cd()
     fin.Close()
