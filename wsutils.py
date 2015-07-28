@@ -181,6 +181,25 @@ def findWorkspaces(topdir, options):
 
 #----------------------------------------------------------------------    
 
+def findSingleWorkspace(topdir, options):
+    """like findWorkspaces(..) but insists that exactly one workspace was selected/found"""
+    import ROOT
+
+    workspaces = findWorkspaces(topdir, options)
+
+    if len(workspaces) > 1:
+        print >> sys.stderr,"more than one workspace found"
+        sys.exit(1)
+
+    if len(workspaces) < 1:
+        print >> sys.stderr,"no workspace found"
+        sys.exit(1)
+
+    return workspaces[0]
+
+#----------------------------------------------------------------------    
+
+
 def getObj(ws, name):
     """ tries to find the given object in the workspace or prints
     an error message an exits if there is no such object """
