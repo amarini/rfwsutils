@@ -293,7 +293,7 @@ def rooArgSetToList(argset):
 def printVars(vars, sortKeyFunc = None, filterFunc = None):
     # vars is a RooArgSet
     # convert this to a python list
-    vars = wsutils.rooArgSetToList(vars)
+    vars = rooArgSetToList(vars)
 
     # potentially filter
     if filterFunc != None:
