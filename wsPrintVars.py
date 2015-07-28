@@ -20,58 +20,6 @@
 import sys, os, wsutils
 
 #----------------------------------------------------------------------
-
-def printVarsStandard(fname, ws):
-    print "variables in " + fname + ":" + ws.GetName() + ":"
-    print "----------------------------------------"
-    sys.stdout.flush()
-
-    # vars is a RooArgSet
-    vars = ws.allVars()
-
-    it = vars.iterator()
-
-    while True:
-        var = it.Next()
-        if var == None:
-            break
-
-        var.Print()
-
-#----------------------------------------------------------------------
-
-def printVarsCSV(ws):
-    # vars is a RooArgSet
-    vars = ws.allVars()
-
-    it = vars.iterator()
-
-    print ",".join([
-        "name",
-        "value",
-        "min",
-        "max",
-        "constant"])
-
-    while True:
-        var = it.Next()
-        if var == None:
-            break
-
-        parts = [
-            var.GetName(),
-            var.getVal(),
-            var.getMin(),
-            var.getMax(),
-            var.isConstant(),
-            ]
-        
-        print ",".join([ str(p) for p in parts ])
-
-
-
-
-#----------------------------------------------------------------------
 # main
 #----------------------------------------------------------------------
 
@@ -124,9 +72,13 @@ for fname in ARGV:
     # traverse all directories in this file
     for ws in wsutils.findWorkspaces(fin, options):
         if options.csv:
-            printVarsCSV(ws)
+            wsutils.printVarsCSV(ws.allVars())
         else:
-            printVarsStandard(fname, ws)
+            print "variables in " + fname + ":" + ws.GetName() + ":"
+            print "----------------------------------------"
+            sys.stdout.flush()
+
+            wsutils.printVars(ws.allVars())
 
     ROOT.gROOT.cd()
     fin.Close()

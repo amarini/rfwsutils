@@ -290,3 +290,46 @@ def rooArgSetToList(argset):
     return retval
 
 #----------------------------------------------------------------------
+def printVars(vars):
+
+    it = vars.iterator()
+
+    while True:
+        var = it.Next()
+        if var == None:
+            break
+
+        var.Print()
+
+#----------------------------------------------------------------------
+
+def printVarsCSV(vars):
+    # vars is a RooArgSet
+
+    it = vars.iterator()
+
+    print ",".join([
+        "name",
+        "value",
+        "min",
+        "max",
+        "constant"])
+
+    while True:
+        var = it.Next()
+        if var == None:
+            break
+
+        parts = [
+            var.GetName(),
+            var.getVal(),
+            var.getMin(),
+            var.getMax(),
+            var.isConstant(),
+            ]
+        
+        print ",".join([ str(p) for p in parts ])
+
+#----------------------------------------------------------------------
+
+
