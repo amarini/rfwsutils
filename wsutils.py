@@ -290,18 +290,30 @@ def rooArgSetToList(argset):
     return retval
 
 #----------------------------------------------------------------------
+
+def filterAndSortObjects(objs, sortKeyFunc = None, filterFunc = None):
+
+    # potentially filter
+    if filterFunc != None:
+        objs = filter(filterFunc, objs)
+    else:
+        # make a copy in any case
+        objs = list(objs)
+
+    # potentially sort
+    if sortKeyFunc != None:
+        objs.sort(key = sortKeyFunc)
+
+    return objs
+
+#----------------------------------------------------------------------
+
 def printVars(vars, sortKeyFunc = None, filterFunc = None):
     # vars is a RooArgSet
     # convert this to a python list
     vars = rooArgSetToList(vars)
 
-    # potentially filter
-    if filterFunc != None:
-        vars = filter(filterFunc, vars)
-
-    # potentially sort
-    if sortKeyFunc != None:
-        vars.sort(key = sortKeyFunc)
+    vars = filterAndSortObjects(vars, sortKeyFunc, filterFunc)
 
     # print them
     for var in vars:
