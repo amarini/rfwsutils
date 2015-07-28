@@ -271,3 +271,22 @@ def applySetVars(workspace, setVarsDict):
             var.setMax(value)
             
         var.setVal(value)
+
+#----------------------------------------------------------------------
+
+def rooArgSetToList(argset):
+    """creates a python list with the contents of argset (which should be a RooArgSet)"""
+    it = argset.createIterator()
+
+    retval = []
+    while True:
+        obj = it.Next()
+
+        if obj == None:
+            break
+
+        retval.append(obj)
+
+    return retval
+
+#----------------------------------------------------------------------
