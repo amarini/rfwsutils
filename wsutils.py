@@ -321,10 +321,12 @@ def printVars(vars, sortKeyFunc = None, filterFunc = None):
 
 #----------------------------------------------------------------------
 
-def printVarsCSV(vars):
+def printVarsCSV(vars, sortKeyFunc = None, filterFunc = None):
     # vars is a RooArgSet
+    # convert this to a python list
+    vars = rooArgSetToList(vars)
 
-    it = vars.iterator()
+    vars = filterAndSortObjects(vars, sortKeyFunc, filterFunc)
 
     print ",".join([
         "name",
@@ -333,10 +335,7 @@ def printVarsCSV(vars):
         "max",
         "constant"])
 
-    while True:
-        var = it.Next()
-        if var == None:
-            break
+    for var in vars:
 
         parts = [
             var.GetName(),
