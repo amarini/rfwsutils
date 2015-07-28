@@ -290,15 +290,21 @@ def rooArgSetToList(argset):
     return retval
 
 #----------------------------------------------------------------------
-def printVars(vars):
+def printVars(vars, sortKeyFunc = None, filterFunc = None):
+    # vars is a RooArgSet
+    # convert this to a python list
+    vars = wsutils.rooArgSetToList(vars)
 
-    it = vars.iterator()
+    # potentially filter
+    if filterFunc != None:
+        vars = filter(filterFunc, vars)
 
-    while True:
-        var = it.Next()
-        if var == None:
-            break
+    # potentially sort
+    if sortKeyFunc != None:
+        vars.sort(key = sortKeyFunc)
 
+    # print them
+    for var in vars:
         var.Print()
 
 #----------------------------------------------------------------------
