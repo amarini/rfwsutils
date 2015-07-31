@@ -16,10 +16,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os, sys
 
-import os, re, sys
+#----------------------------------------------------------------------
+# workaround the problem of printing an escape sequence
+# at program startup (which becomes visible if the output is redirected
+# into a file)
+# see http://stackoverflow.com/questions/15760712/
+# and the corresponding bug report http://bugs.python.org/issue19884
+
+if not sys.stdout.isatty():
+    oldTerm = os.environ['TERM']
+    os.environ['TERM'] = ''
+
+    # something (ROOT ?) will seems to import readline afterwards
+    # anyway
+    import readline
+    os.environ['TERM'] = oldTerm
+    del oldTerm
+
+#----------------------------------------------------------------------
+
+import re
 import ConfigParser
-
 
 #----------------------------------------------------------------------
 
