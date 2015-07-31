@@ -125,6 +125,14 @@ parser = OptionParser("""
 
 wsutils.addCommonOptions(parser)
 
+parser.add_option("--exclude",
+                  dest="exclude",
+                  default = [],
+                  action = "append",
+                  help="fnmatch pattern of nodes to exclude from the graph. Option can be specified multiple times",
+                  )
+
+
 (options, ARGV) = parser.parse_args()
 
 #----------------------------------------
@@ -137,7 +145,6 @@ if len(ARGV) != 3:
     sys.exit(1)
 
 #----------------------------------------
-
 
 import ROOT
 
@@ -170,8 +177,22 @@ if not nodes:
 
 # print [ node.GetName() for node in nodes ]
 
-# get names of good nodes so that we can later on check
+#----------
+# apply list of exclusion patterns
+#----------
+import fnmatch
+for excludePattern in options.exclude:
+    newNodes = []
+    for node in nodes:
+        if not fnmatch.fnmatch(node.GetName(), excludePattern):
+            newNodes.append(node)
+
+    nodes = newNodes
+
+#----------
+# get names of (remaining) good nodes so that we can later on check
 # which edges to draw
+#----------
 nodeNames = set([ node.GetName() for node in nodes ])
 
 #----------
