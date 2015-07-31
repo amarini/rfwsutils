@@ -349,4 +349,15 @@ def printVarsCSV(vars, sortKeyFunc = None, filterFunc = None):
 
 #----------------------------------------------------------------------
 
+def getClients(node):
+    clients = []
+    iter = node.clientIterator()
+    while True:
+        client = iter.Next()
+        if client == None:
+            break
+        clients.append(client)
 
+    return clients
+
+#----------------------------------------------------------------------
