@@ -38,6 +38,13 @@ parser.add_option("--csv",
                   help="print information about variables in .csv format",
                   )
 
+parser.add_option("--sort",
+                  default = False,
+                  action="store_true",
+                  help="sort variables alphabetically (case insensitive)",
+                  )
+
+
 wsutils.addCommonOptions(parser)
 
 (options, ARGV) = parser.parse_args()
@@ -61,6 +68,12 @@ ROOT.gROOT.SetBatch(True)
 
 wsutils.loadLibraries(options)
 
+if options.sort:
+    # case insensitive sorting
+    varSortFunc = lambda var: var.GetName().lower()
+else:
+    varSortFunc = None
+
 for fname in ARGV:
 
     fin = ROOT.TFile.Open(fname)
@@ -72,13 +85,13 @@ for fname in ARGV:
     # traverse all directories in this file
     for ws in wsutils.findWorkspaces(fin, options):
         if options.csv:
-            wsutils.printVarsCSV(ws.allVars())
+            wsutils.printVarsCSV(ws.allVars(), sortKeyFunc = varSortFunc)
         else:
             print "variables in " + fname + ":" + ws.GetName() + ":"
             print "----------------------------------------"
             sys.stdout.flush()
 
-            wsutils.printVars(ws.allVars())
+            wsutils.printVars(ws.allVars(), sortKeyFunc = varSortFunc)
 
     ROOT.gROOT.cd()
     fin.Close()
