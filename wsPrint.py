@@ -56,7 +56,7 @@ for fname in ARGV:
 
     fin = ROOT.TFile.Open(fname)
 
-    if not fin.IsOpen():
+    if fin == None or not fin.IsOpen():
         print >> sys.stderr,"problems opening file " + fname
         sys.exit(1)
 
