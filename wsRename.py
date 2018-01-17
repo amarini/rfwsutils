@@ -177,6 +177,24 @@ for oldName, newName, member in zip(oldNames, newNames, allMembers):
     print >> sys.stderr,"renaming %s -> %s" % (oldName, newName)
     member.SetName(newName)
 
+## datasets observables
+for member in allMembers:
+    if not isinstance(member,ROOT.RooAbsData):continue
+    argset=member.get()
+    #for j in range(0,argset.getSize() ):
+    it = argset.createIterator()
+    x=it.Next()
+    while x:
+        oldName=x.GetName()
+        if oldName in oldNames:
+            pos=oldNames.index(oldName)
+            newName=newNames[pos]
+            if newName != None:
+                print >>sys.stderr,"changing in %s: %s -> %s"%(member.GetName(),oldName,newName)
+                member.changeObservableName(oldName,newName)
+            else:
+                print >>sys.stderr,"WARNING wanted to change in %s: %s -> %s but new name is None"%(member.GetName(),oldName,newName)
+        x=it.Next()
     
 
 if numRenames == 0:
