@@ -44,6 +44,11 @@ parser.add_option("--sort",
                   help="sort variables alphabetically (case insensitive)",
                   )
 
+parser.add_option("--snapshot",
+                  default = None,
+                  help="load snapshot name",
+                  )
+
 
 wsutils.addCommonOptions(parser)
 
@@ -84,6 +89,7 @@ for fname in ARGV:
 
     # traverse all directories in this file
     for ws in wsutils.findWorkspaces(fin, options):
+        if options.snapshot: ws.loadSnapshot(options.snapshot)
         if options.csv:
             wsutils.printVarsCSV(ws.allVars(), sortKeyFunc = varSortFunc)
         else:

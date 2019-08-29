@@ -26,14 +26,18 @@ import os, sys
 # and the corresponding bug report http://bugs.python.org/issue19884
 
 if not sys.stdout.isatty():
-    oldTerm = os.environ['TERM']
-    os.environ['TERM'] = ''
+    try:
+        oldTerm = os.environ['TERM']
+        os.environ['TERM'] = ''
 
-    # something (ROOT ?) will seems to import readline afterwards
-    # anyway
-    import readline
-    os.environ['TERM'] = oldTerm
-    del oldTerm
+        # something (ROOT ?) will seems to import readline afterwards
+        # anyway
+        import readline
+        os.environ['TERM'] = oldTerm
+        del oldTerm
+
+    except: 
+        pass
 
 #----------------------------------------------------------------------
 
