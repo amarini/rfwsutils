@@ -93,7 +93,8 @@ while len(ARGV):
 
     if obj == None:
         print >> sys.stderr,"could not find item %s in workspace %s in file %s" % (itemName, workspace.GetName(), fname)
-        sys.exit(1)
+        #sys.exit(1)
+        continue
 
     obj.setBins(value)
 
